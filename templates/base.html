@@ -14,7 +14,13 @@
         <ul class="navul">
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'create' %}">Create</a></li>
-            <li><a href="{% url 'api' %}">API</a></li>
+            <!-- <li><a href="">API</a></li>
+            <form method="post">
+                {% csrf_token %}
+                <p for="id_product">API_id:</p>
+                <input type="number" name="id_product">
+                <button type="submit">Submit</button>
+            </form> -->
         </ul>
     </nav>
 
