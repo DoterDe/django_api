@@ -12,8 +12,15 @@
     <nav>
         <h1 class="navlogo">logo <img src="{% static 'img/golang_gopher_src_logo_icon_168155.webp' %}" alt="" class="logo"></h1>
         <ul class="navul">
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'create' %}">Create</a></li>
+            
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'create' %}">Create</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+            {% endif %}
+
+
             <!-- <li><a href="">API</a></li>
             <form method="post">
                 {% csrf_token %}

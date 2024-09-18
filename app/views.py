@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
-from .forms import CreatePostForm
+from .forms import CreatePostForm , UserForm
 from .models import UserProfile,Product
 from django.views.generic.edit import CreateView, DeleteView
 from .serializers import ProductSerializers
@@ -14,6 +14,15 @@ from django.http import JsonResponse
 from rest_framework import status, generics
 from rest_framework.viewsets import ModelViewSet,ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.views import LoginView
+
+
+
+class Login(LoginView):
+    redirect_authenticated_user = True
+    template_name = 'login.html'
+    success_url = reverse_lazy('home')
+    form_class = UserForm
 
 
 @permission_classes((IsAuthenticated,))

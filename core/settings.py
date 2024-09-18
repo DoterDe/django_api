@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
-
+from datetime import timedelta
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,13 +12,73 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-6_#ir*rn8=6(p-2)z7aoddd84*!y7g%p31fhpc5(kxu^@qyl$d'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+                
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
 
-# Application definition
+    )
+}
+
+
+LOGGING = {
+    'version' :1 , 
+    'disable_existing_loggers':True,
+    'filters':{
+        'require_debug_false': {
+            '()' : 'django.utils.log.RequireDebugFalse',
+
+        },
+        'require_debug_true': {
+            '()' : 'django.utils.log.RequireDebugTrue',
+
+        },
+    },
+    'formatters':{
+        'simple':{
+            'format': '[%(asctime)s] %(levelname)s: %(message)s',
+            'datefmt': '%Y.%m.%d %H:%M:%S',
+        }
+    },
+    'handlers':{
+        'console_dev':{
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'filters': ["require_debug_true"]
+        },
+        'console_prod':{
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'level': 'ERROR',
+            'filters': ["require_debug_false"]
+        },
+        'file':{
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename':BASE_DIR / 'debug.log',
+            'maxBytes':1048576,
+            'backupCount':10,
+            'formatter':'simple',
+        }
+    },
+    'loggers':{
+        'django':{
+            'hendlers':['console_dev', 'console_prod'],
+        },
+        'django.server':{
+            'handlers':['file'],
+            'level': 'INFO',
+            'propagate':True,
+        }
+    }
+}
+
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,7 +89,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -64,15 +126,31 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
+
+if not IS_HEROKU_APP:
+    DEBUG = True
+
+if IS_HEROKU_APP:
+
+    DATABASES = {
+        "default": dj_database_url.config(
+            env="DATABASE_URL",
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True,
+        ),
     }
-}
+else:
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
