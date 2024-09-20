@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6_#ir*rn8=6(p-2)z7aoddd84*!y7g%p31fhpc5(kxu^@qyl$d'
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ng1nx.pythonanywhere.com']
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':(
